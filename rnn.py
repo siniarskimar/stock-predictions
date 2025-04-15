@@ -2,7 +2,7 @@ import sys
 from datetime import datetime
 
 import torch
-from torch import nn, optim
+from torch import nn, optim, tensor
 
 import numpy as np
 import pandas as pd
@@ -23,7 +23,7 @@ class PredictorModel(nn.Module):
         out, _ = self.rnn(xs)
         return self.fc(out)
 
-    def fit(self, ts, ys):
+    def fit(self, ts: tensor, ys: tensor) -> float:
         self.optimizer.zero_grad()
         y_pred = self.forward(ts)
         loss = self.loss(y_pred, ys)
@@ -33,7 +33,7 @@ class PredictorModel(nn.Module):
 
 
 if __name__ == "__main__":
-    EPOCHS = 100
+    EPOCHS = 5000
 
     model = PredictorModel()
     data = pd.read_csv(
@@ -50,10 +50,11 @@ if __name__ == "__main__":
     for epoch in range(EPOCHS):
         loss = model.fit(T, Y)
         loss_over_epoch.append(loss)
-        sys.stdout.write(f"\r                 \repoch: {epoch} loss: {loss}")
+        sys.stdout.write("\r                                       \r")
+        sys.stdout.write(f"epoch: {epoch} loss: {loss}")
         sys.stdout.flush()
     sys.stdout.write('\n')
 
-    print("prediction: " + model(torch.from_numpy(data[-1])))
-    plt.plot(data[1:, 0], loss_over_epoch)
+    # print("prediction: " + model(torch.from_numpy(data[-1])))
+    plt.plot(np.linspace(0, EPOCHS, EPOCHS), loss_over_epoch)
     plt.show()
