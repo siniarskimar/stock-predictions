@@ -37,12 +37,11 @@ def main():
         exit(1)
 
     if not 0 <= args.split <= 100:
-        print(f'data split is defined outside of range [0; 100], got {
-              args.split}')
-        exit(1)
+        print(f'data split is defined outside of range [0; 100], got {args.split}')
+        exit(1)  
 
     training_split = float(args.split) / 100
-
+   
     input_csv = pd.read_csv(
         sys.argv[1],
         sep=CSV_SEP,
@@ -53,7 +52,9 @@ def main():
 
     input_csv['Date'] = pd.to_datetime(
         input_csv['Date'], format=DATETIME_FORMAT)
-    input_csv.sort_values('Date')
+
+    input_csv = input_csv.sort_values('Date')
+    print(input_csv.head(10))
     row_count = len(input_csv)
     training_row_count = int(row_count * training_split)
 
