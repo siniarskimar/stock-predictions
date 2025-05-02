@@ -8,17 +8,14 @@ import pandas as pd
 
 import matplotlib.pyplot as plt
 
-device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-print('Using device:', device)
-print(torch.cuda.current_device())
 
 class PredictorModel(nn.Module):
     def __init__(self):
         super().__init__()
-        self.rnn = nn.RNN(input_size=6, hidden_size=32, batch_first=True)
-        self.fc = nn.Linear(32, 1)
+        self.rnn = nn.RNN(input_size=6, hidden_size=16, batch_first=True)
+        self.fc = nn.Linear(16, 1)
         self.to(torch.float32)
-        self.optimizer = optim.Adam(self.parameters(), lr = 0.001)
+        self.optimizer = optim.Adam(self.parameters(), lr=0.001)
         self.loss = nn.MSELoss()
 
     def forward(self, xs):
@@ -34,8 +31,14 @@ class PredictorModel(nn.Module):
         return loss.item()
 
 
-if __name__ == "__main__":
+def main():
     EPOCHS = 5000
+
+    device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+    print(f'Using device: {device.type}')
+
+    if device.index is not None:
+        print(f'Device index: {device.index}')
 
     model = PredictorModel()
     model.to(device)
@@ -62,3 +65,7 @@ if __name__ == "__main__":
 
     plt.plot(np.linspace(0, EPOCHS, EPOCHS), loss_over_epoch)
     plt.show()
+
+
+if __name__ == "__main__":
+    main()
